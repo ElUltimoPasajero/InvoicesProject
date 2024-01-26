@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.app.DatePickerDialog
+import android.provider.SyncStateContract
 import android.util.Log
 import android.widget.CheckBox
 import android.widget.SeekBar
@@ -24,6 +25,8 @@ class FilterActivity : AppCompatActivity() {
     private lateinit var fixedPayment: CheckBox
     private lateinit var pendingPayment: CheckBox
     private lateinit var paymentPlan: CheckBox
+    private var maxAmount: Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +79,7 @@ class FilterActivity : AppCompatActivity() {
         initCalendar()
         initSeekBar()
         initCheckBoxes()
+        initResetButton()
         applyTheSavedFilters()
         // Intenta cargar los filtros iniciales si existen
         val filtroJson = intent.getStringExtra("FILTRO_ENVIAR_RECIBIR_DATOS")
@@ -245,6 +249,26 @@ class FilterActivity : AppCompatActivity() {
         val filterJson = gson.toJson(filter)
 
         prefs.edit().putString("FILTER_STATUS", filterJson).apply()
+    }
+
+    private fun initResetButton() {
+        binding.buttonRestart.setOnClickListener {
+            resetFilters()
+        }
+    }
+
+    private fun resetFilters() {
+       maxAmount=  intent.getDoubleExtra("MAX_IMPORTE", 0.0).toInt() + 1
+
+        binding.sliderAmmount.progress= maxAmount
+        binding.buttonFrom.text = getString(R.string.day_month_year)
+        binding.buttonUntil.text = getString(R.string.day_month_year)
+        binding.checkBoxPaid.isChecked = false
+        binding.checkBoxCancel.isChecked = false
+        binding.checkBoxFixedPayment.isChecked = false
+        binding.checkBoxPendingPayment.isChecked = false
+        binding.checkBoxPayPlan.isChecked = false
+
     }
 
     private fun loadFilters(filter: Filter) {
