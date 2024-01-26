@@ -216,7 +216,7 @@ class FilterActivity : AppCompatActivity() {
      *
      */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.menu_filter, menu)
         return true
     }
 
@@ -228,9 +228,9 @@ class FilterActivity : AppCompatActivity() {
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.invoice_menu_filter -> {
+            R.id.invoice_filter_close -> {
                 // Inicia la actividad de filtro al seleccionar la opción del menú
-                val filterIntent = Intent(this, FilterActivity::class.java)
+                val filterIntent = Intent(this, MainActivity::class.java)
                 startActivity(filterIntent)
                 true
             }
