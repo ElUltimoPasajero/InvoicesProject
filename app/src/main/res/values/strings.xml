@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Facturas</string>
+    <string name="button_from">dia/mes/año</string>
+    <string name="button_until">dia/mes/año</string>
+    <string name="text_view_until">Hasta</string>
+    <string name="text_view_from">Desde</string>
+    <string name="ammount">Por importe</string>
+    <string name="filter_invoice">Filtrar Facturas</string>
+    <string name="cancel">Anulada</string>
+    <string name="pending_payment">Pendiente de pago</string>
+    <string name="payment_plan">Plan de pago</string>
+    <string name="fixed_fee">Cuota fija</string>
+    <string name="issue_date">Fecha de emision</string>
+    <string name="button_apply">Aplicar</string>
+    <string name="slider_ammount">0</string>
+    <string name="restart_filters">Eliminar</string>
+    <string name="functionality_not_available">Esta funcionalidad no está disponible</string>
+    <string name="button_close">Cerrar</string>
+    <string name="status">Por Estado</string>
+    <string name="invoice_history">Historial De Facturas</string>
+    <string name="dia_mes_año">dia/mes/año</string>
+
+
+
+
+
+
+
+</resources>
