@@ -110,13 +110,15 @@ class FilterActivity : AppCompatActivity() {
             Log.d("MAX", maxValueSlider.toString())
             Log.d("MINDATE", minDate)
             Log.d("MAXDATE", maxDate)
-            val filter: com.example.invoicesproject.ui.view.Filter = Filter(maxDate, minDate, maxValueSlider, state)
-            if (!minDate.equals("Dia/Mes/Año") && !maxDate.equals("Dia/Mes/Año")) {
+            val filter: Filter = Filter(maxDate, minDate, maxValueSlider, state)
+
+            if (!minDate.equals("dia/mes/año") && !maxDate.equals("dia/mes/año")) {
                 val miIntent = Intent(this, MainActivity::class.java)
                 miIntent.putExtra("FILTRO_ENVIAR_RECIBIR_DATOS", gson.toJson(filter))
+
                 startActivity(miIntent)
             } else {
-
+                Log.d("HOLAAAAAAAAAA", "patart")
 
             }
         }

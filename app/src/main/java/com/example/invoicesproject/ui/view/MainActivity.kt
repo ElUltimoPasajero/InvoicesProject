@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
 
                     // Aplica los filtros.
 
-                    invoiceList = filterInvoiceByDate(nonNullFilter.maxDateValor, nonNullFilter.minDateValor, invoiceList)
+                    invoiceList = filterInvoiceByDate(nonNullFilter.minDateValor, nonNullFilter.maxDateValor, invoiceList)
                     invoiceList = filterInvoicesByCheckBox(nonNullFilter.status, invoiceList)
                     invoiceList = verifyBalanceBar(nonNullFilter.maxValueSliderValor, invoiceList)
 
@@ -210,7 +210,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterInvoiceByDate(dateFrom: String, dateUntil: String,filteredList: List<Invoice>): List<Invoice> {
         val dateList= mutableListOf<Invoice>()
-        if (dateFrom != getString(R.string.dia_mes_año) && dateUntil != getString(R.string.dia_mes_año)) {
+        if (dateFrom != getString(R.string.day_month_year) && dateUntil != getString(R.string.day_month_year)) {
             val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
             val DMinDate: Date? = sdf.parse(dateFrom)
