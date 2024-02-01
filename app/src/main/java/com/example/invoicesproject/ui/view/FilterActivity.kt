@@ -280,7 +280,7 @@ class FilterActivity : AppCompatActivity() {
         binding.checkBoxPaid.isChecked = filter.status["PAGADAS_STRING"] ?: false
         binding.checkBoxCancel.isChecked = filter.status["ANULADAS_STRING"] ?: false
         binding.checkBoxFixedPayment.isChecked = filter.status["CUOTA_FIJA_STRING"] ?: false
-        binding.checkBoxPendingPayment.isChecked = filter.status["PENDIENTES_PAGO_STRING"] ?: false
+        binding.checkBoxPendingPayment.isChecked = filter.status["PENDIENTE_PAGO_STRING"] ?: false
         binding.checkBoxPayPlan.isChecked = filter.status["PLAN_PAGO_STRING"] ?: false
     }
 
@@ -306,7 +306,7 @@ class FilterActivity : AppCompatActivity() {
             "PAGADAS_STRING" to paid.isChecked,
             "ANULADAS_STRING" to cancelled.isChecked,
             "CUOTA_FIJA_STRING" to fixedPayment.isChecked,
-            "PENDIENTES_PAGO_STRING" to pendingPayment.isChecked,
+            "PENDIENTE_PAGO_STRING" to pendingPayment.isChecked,
             "PLAN_PAGO_STRING" to paymentPlan.isChecked
         )
         val minDate = binding.buttonFrom.text.toString()
