@@ -13,17 +13,12 @@
     <string name="issue_date">Fecha de emision</string>
     <string name="button_apply">Aplicar</string>
     <string name="slider_ammount">0</string>
-    <string name="restart_filters">Eliminar</string>
+    <string name="restart_filters">Eliminar Filtros</string>
     <string name="functionality_not_available">Esta funcionalidad no está disponible</string>
     <string name="button_close">Cerrar</string>
     <string name="status">Por Estado</string>
     <string name="invoice_history">Historial De Facturas</string>
     <string name="day_month_year">dia/mes/año</string>
-
-
-
-
-
 
 
 </resources>

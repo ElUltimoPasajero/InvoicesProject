@@ -23,6 +23,7 @@ import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -146,7 +147,11 @@ class MainActivity : AppCompatActivity() {
                 filter?.let { nonNullFilter ->
 
                     // Aplica los filtros.
-
+                    if (nonNullFilter.maxDateValor.isEmpty()) {
+                        val currentDate = Calendar.getInstance().time
+                        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        nonNullFilter.maxDateValor = dateFormat.format(currentDate)
+                    }
                     invoiceList = filterInvoiceByDate(nonNullFilter.minDateValor, nonNullFilter.maxDateValor, invoiceList)
                     invoiceList = filterInvoicesByCheckBox(nonNullFilter.status, invoiceList)
                     invoiceList = verifyBalanceBar(nonNullFilter.maxValueSliderValor, invoiceList)

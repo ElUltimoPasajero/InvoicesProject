@@ -12,23 +12,24 @@
 
         <Button
             android:id="@+id/button_until"
-            android:layout_width="117dp"
-            android:layout_height="47dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="133dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="84dp"
             android:layout_marginBottom="32dp"
             android:text="@string/button_until"
-            android:textSize="10dp"
+            android:textSize="13dp"
             app:backgroundTint="#018786"
             app:layout_constraintBottom_toTopOf="@+id/view2"
             app:layout_constraintStart_toEndOf="@+id/button_from" />
 
         <Button
             android:id="@+id/button_from"
-            android:layout_width="117dp"
-            android:layout_height="47dp"
-            android:layout_marginTop="20dp"
+            android:layout_width="131dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="24dp"
             android:text="@string/button_from"
-            android:textSize="10dp"
+            android:textSize="13dp"
             app:backgroundTint="#018786"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/textView4"
@@ -63,25 +64,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="60dp"
-            android:layout_marginEnd="80dp"
+            android:layout_marginEnd="36dp"
             android:text="@string/text_view_until"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="@+id/button_until"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
+
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="40dp"
             android:layout_marginEnd="76dp"
             android:text="@string/text_view_from"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@+id/textView5"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.281"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="@+id/textView3" />
-
 
         <TextView
             android:id="@+id/textView6"
@@ -115,6 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
+            android:textSize="17dp"
             android:layout_marginBottom="16dp"
             android:text="@string/issue_date"
             android:textColor="@color/black"
@@ -164,10 +166,10 @@
             android:text="@string/slider_ammount"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.927"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            app:layout_constraintVertical_bias="0.436" />
+            app:layout_constraintVertical_bias="0.435" />
 
         <SeekBar
             android:id="@+id/slider_ammount"
