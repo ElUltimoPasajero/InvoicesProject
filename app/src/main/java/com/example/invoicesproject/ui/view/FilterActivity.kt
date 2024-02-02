@@ -136,21 +136,7 @@ class FilterActivity : AppCompatActivity() {
         binding.buttonFrom.setOnClickListener {
             obtainDate(binding.buttonFrom, false)
 
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
 
-            val datePickerDialog = DatePickerDialog(
-                this,
-                DatePickerDialog.OnDateSetListener { view, year1, monthOfYear, dayOfMonth ->
-                    binding.buttonFrom.text = "$dayOfMonth/${monthOfYear + 1}/$year1"
-                },
-                year,
-                month,
-                day
-            )
-            datePickerDialog.show()
         }
 
         // Configuración del botón de fecha "Hasta".
@@ -158,21 +144,6 @@ class FilterActivity : AppCompatActivity() {
         binding.buttonUntil.setOnClickListener {
             obtainDate(binding.buttonUntil, true, minDate = obtainMinDateAux())
 
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-
-            val datePickerDialog = DatePickerDialog(
-                this,
-                DatePickerDialog.OnDateSetListener { view, year1, monthOfYear, dayOfMonth ->
-                    binding.buttonUntil.text = "$dayOfMonth/${monthOfYear + 1}/$year1"
-                },
-                year,
-                month,
-                day
-            )
-            datePickerDialog.show()
         }
     }
 
