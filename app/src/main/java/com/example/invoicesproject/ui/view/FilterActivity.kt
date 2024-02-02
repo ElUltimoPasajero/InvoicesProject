@@ -1,4 +1,5 @@
 package com.example.invoicesproject.ui.view
+
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,12 +8,15 @@ import android.view.MenuItem
 import android.app.DatePickerDialog
 import android.provider.SyncStateContract
 import android.util.Log
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.SeekBar
 import com.example.invoicesproject.R
 import com.example.invoicesproject.databinding.ActivityFilterBinding
 import com.google.gson.Gson
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 
 class FilterActivity : AppCompatActivity() {
@@ -61,7 +65,8 @@ class FilterActivity : AppCompatActivity() {
             Log.d("MAX", maxValueSlider.toString())
             Log.d("MINDATE", minDate.toString())
             Log.d("MAXDATE", maxDate.toString())
-            val filter: com.example.invoicesproject.ui.view.Filter = Filter(maxDate, minDate, maxValueSlider, state)
+            val filter: com.example.invoicesproject.ui.view.Filter =
+                Filter(maxDate, minDate, maxValueSlider, state)
             val miIntent = Intent(this, MainActivity::class.java)
             miIntent.putExtra("FILTRO_ENVIAR_RECIBIR_DATOS", gson.toJson(filter))
             startActivity(miIntent)
@@ -83,7 +88,7 @@ class FilterActivity : AppCompatActivity() {
         applyTheSavedFilters()
         // Intenta cargar los filtros iniciales si existen
         val filtroJson = intent.getStringExtra("FILTRO_ENVIAR_RECIBIR_DATOS")
-        Log.d("Cosa",filtroJson.toString())
+        Log.d("Cosa", filtroJson.toString())
         if (filtroJson != null) {
             filter = Gson().fromJson(filtroJson, Filter::class.java)
             filter?.let { nonNullFilter ->
@@ -106,10 +111,6 @@ class FilterActivity : AppCompatActivity() {
 
             val minDate = binding.buttonFrom.text.toString()
             val maxDate = binding.buttonUntil.text.toString()
-            Log.d("CHECK", state.toString())
-            Log.d("MAX", maxValueSlider.toString())
-            Log.d("MINDATE", minDate)
-            Log.d("MAXDATE", maxDate)
             val filter: Filter = Filter(maxDate, minDate, maxValueSlider, state)
 
             if (!minDate.equals("dia/mes/año") && !maxDate.equals("dia/mes/año")) {
@@ -118,7 +119,6 @@ class FilterActivity : AppCompatActivity() {
 
                 startActivity(miIntent)
             } else {
-                Log.d("HOLAAAAAAAAAA", "patart")
 
             }
         }
@@ -134,6 +134,8 @@ class FilterActivity : AppCompatActivity() {
         // Configuración del botón de fecha "Desde".
 
         binding.buttonFrom.setOnClickListener {
+            obtainDate(binding.buttonFrom, false)
+
             val c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
             val month = c.get(Calendar.MONTH)
@@ -154,6 +156,8 @@ class FilterActivity : AppCompatActivity() {
         // Configuración del botón de fecha "Hasta".
 
         binding.buttonUntil.setOnClickListener {
+            obtainDate(binding.buttonUntil, true, minDate = obtainMinDateAux())
+
             val c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
             val month = c.get(Calendar.MONTH)
@@ -172,6 +176,45 @@ class FilterActivity : AppCompatActivity() {
         }
     }
 
+    private fun obtainDate(btnDate: Button, minDateRestriction: Boolean, minDate: Long? = null) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+// Crear un DatePickerDialog con la fecha actual como predeterminada
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { view, year1, month1, dayOfMonth ->
+                btnDate.text = "$dayOfMonth/${month1 + 1}/$year1"
+            },
+            year,
+            month,
+            day
+        )
+// Aplicar restriccion de fecha minima si es necesario
+        if (minDateRestriction) {
+            minDate?.let {
+                datePickerDialog.datePicker.minDate = it
+            }
+        }
+        datePickerDialog.show()
+    }
+
+    private fun obtainMinDateAux(): Long {
+// Formato de echa esperado en el botón
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+// Obtiene la fecha desde tu botón
+        val selectedDateFrom = binding.buttonFrom.text.toString()
+
+        try {
+// Parsea la fecha y la devuelve como tipo Date
+            val dateFrom = dateFormat.parse(selectedDateFrom)
+            return dateFrom?.time ?: 0L
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return 0L
+    }
 
     /**
      * Inicializa el control deslizante (SeekBar) y maneja los cambios.
@@ -260,9 +303,9 @@ class FilterActivity : AppCompatActivity() {
     }
 
     private fun resetFilters() {
-       maxAmount=  intent.getDoubleExtra("MAX_IMPORTE", 0.0).toInt() + 1
+        maxAmount = intent.getDoubleExtra("MAX_IMPORTE", 0.0).toInt() + 1
 
-        binding.sliderAmmount.progress= maxAmount
+        binding.sliderAmmount.progress = maxAmount
         binding.buttonFrom.text = getString(R.string.day_month_year)
         binding.buttonUntil.text = getString(R.string.day_month_year)
         binding.checkBoxPaid.isChecked = false
@@ -315,7 +358,6 @@ class FilterActivity : AppCompatActivity() {
 
         saveFilters(filter!!)
     }
-
 
 
 }
