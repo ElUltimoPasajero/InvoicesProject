@@ -19,6 +19,7 @@
     <string name="status">Por Estado</string>
     <string name="invoice_history">Historial De Facturas</string>
     <string name="day_month_year">dia/mes/año</string>
+    <string name="no_invoices">No Hay Facturas que coincidan con el filtro</string>
 
 
 </resources>

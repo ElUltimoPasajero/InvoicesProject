@@ -10,6 +10,10 @@ import android.content.SharedPreferences
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var invoiceAdapter: InvoiceAdapter
     private var filter: Filter? = null
+    private lateinit var intentLaunch: ActivityResultLauncher<Intent>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +57,28 @@ class MainActivity : AppCompatActivity() {
 
         initViewModel()
         initMainViewModel()
+
+        intentLaunch =
+
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+
+                if (result.resultCode == RESULT_OK) {
+
+                    val maxImporte = result.data?.extras?.getDouble("MAX_IMPORTE") ?: 0.0
+
+                    val filtroJson = result.data?.extras?.getString("FILTRO_ENVIAR_RECIBIR_DATOS")
+
+                    if (filtroJson != null) {
+
+                        val gson = Gson()
+
+                        val objFiltro = gson.fromJson(filtroJson, FilterActivity::class.java)
+
+                    }
+
+                }
+
+            }
 
     }
 
@@ -76,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 }
-                startActivity(miIntent)
+                intentLaunch.launch(miIntent)
                 true
             }
 
@@ -155,6 +182,14 @@ class MainActivity : AppCompatActivity() {
                     invoiceList = filterInvoiceByDate(nonNullFilter.minDateValor, nonNullFilter.maxDateValor, invoiceList)
                     invoiceList = filterInvoicesByCheckBox(nonNullFilter.status, invoiceList)
                     invoiceList = verifyBalanceBar(nonNullFilter.maxValueSliderValor, invoiceList)
+
+
+                    //Si no hay ninguna factura por los filtros nos muestra este texto
+                    if(invoiceList.isEmpty()){
+                        binding.emptyInvoices.visibility= View.VISIBLE
+
+
+                    }
 
                     invoiceAdapter.setListInvoices(invoiceList)
                     Log.d("FILTRO2", filter.toString())

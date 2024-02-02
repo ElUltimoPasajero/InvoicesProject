@@ -11,6 +11,9 @@ import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.SeekBar
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.invoicesproject.R
 import com.example.invoicesproject.databinding.ActivityFilterBinding
 import com.google.gson.Gson
@@ -30,6 +33,7 @@ class FilterActivity : AppCompatActivity() {
     private lateinit var pendingPayment: CheckBox
     private lateinit var paymentPlan: CheckBox
     private var maxAmount: Int = 0
+    private lateinit var intentLaunch: ActivityResultLauncher<Intent>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,19 +65,33 @@ class FilterActivity : AppCompatActivity() {
 
             val minDate = binding.buttonFrom.text.toString()
             val maxDate = binding.buttonUntil.text.toString()
-            Log.d("CHECK", state.toString())
-            Log.d("MAX", maxValueSlider.toString())
-            Log.d("MINDATE", minDate.toString())
-            Log.d("MAXDATE", maxDate.toString())
             val filter: com.example.invoicesproject.ui.view.Filter =
                 Filter(maxDate, minDate, maxValueSlider, state)
             val miIntent = Intent(this, MainActivity::class.java)
             miIntent.putExtra("FILTRO_ENVIAR_RECIBIR_DATOS", gson.toJson(filter))
-            startActivity(miIntent)
-            Log.d("FILTROS!", filter.toString())
+            intentLaunch.launch(miIntent)
+            finish()
         }
 
+        intentLaunch = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
 
+                if (result.resultCode == RESULT_OK) {
+
+                    val maxImporte = result.data?.extras?.getDouble("MAX_IMPORTE") ?: 0.0
+
+                    val filtroJson = result.data?.extras?.getString("FILTRO_ENVIAR_RECIBIR_DATOS")
+
+                    if (filtroJson != null) {
+
+                        val gson = Gson()
+
+                        val objFiltro = gson.fromJson(filtroJson, MainActivity::class.java)
+
+                    }
+
+                }
+
+            }
     }
 
     /**
@@ -97,31 +115,7 @@ class FilterActivity : AppCompatActivity() {
         }
         Log.d("FiltroJSON", filtroJson.toString())
 
-        binding.buttonApply.setOnClickListener {
-            updateAndSaveFilters()
-            val gson = Gson()
-            val maxValueSlider = binding.sliderAmmount.toString().toDouble()
-            val state = hashMapOf(
-                "PAGADAS_STRING" to paid.isChecked,
-                "ANULADAS_STRING" to cancelled.isChecked,
-                "CUOTA_FIJA_STRING" to fixedPayment.isChecked,
-                "PENDIENTES_PAGO_STRING" to pendingPayment.isChecked,
-                "PLAN_PAGO_STRING" to paymentPlan.isChecked
-            )
 
-            val minDate = binding.buttonFrom.text.toString()
-            val maxDate = binding.buttonUntil.text.toString()
-            val filter: Filter = Filter(maxDate, minDate, maxValueSlider, state)
-
-            if (!minDate.equals("dia/mes/año") && !maxDate.equals("dia/mes/año")) {
-                val miIntent = Intent(this, MainActivity::class.java)
-                miIntent.putExtra("FILTRO_ENVIAR_RECIBIR_DATOS", gson.toJson(filter))
-
-                startActivity(miIntent)
-            } else {
-
-            }
-        }
     }
 
 
@@ -251,7 +245,7 @@ class FilterActivity : AppCompatActivity() {
             R.id.invoice_filter_close -> {
                 // Inicia la actividad de filtro al seleccionar la opción del menú
                 val filterIntent = Intent(this, MainActivity::class.java)
-                startActivity(filterIntent)
+intentLaunch.launch(filterIntent)
                 true
             }
 
