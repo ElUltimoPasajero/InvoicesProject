@@ -73,7 +73,8 @@ class FilterActivity : AppCompatActivity() {
             finish()
         }
 
-        intentLaunch = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        intentLaunch =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
 
                 if (result.resultCode == RESULT_OK) {
 
@@ -106,7 +107,6 @@ class FilterActivity : AppCompatActivity() {
         applyTheSavedFilters()
         // Intenta cargar los filtros iniciales si existen
         val filtroJson = intent.getStringExtra("FILTRO_ENVIAR_RECIBIR_DATOS")
-        Log.d("Cosa", filtroJson.toString())
         if (filtroJson != null) {
             filter = Gson().fromJson(filtroJson, Filter::class.java)
             filter?.let { nonNullFilter ->
@@ -165,14 +165,25 @@ class FilterActivity : AppCompatActivity() {
         datePickerDialog.show()
     }
 
+
+    /**
+     * Muestra un cuadro de diálogo de selección de fecha y actualiza el texto de un botón con la fecha seleccionada.
+     *
+     * @param btnDate El botón cuyo texto se actualizará con la fecha seleccionada.
+     * @param minDateRestriction Indica si se debe aplicar una restricción de fecha mínima.
+     * @param minDate La fecha mínima permitida si se aplica la restricción (en milisegundos desde la época). Puede ser nulo si no se desea una restricción.
+     */
+
+    /**
+     * Obtiene la fecha mínima seleccionada desde un botón y la devuelve en milisegundos desde la época.
+     *
+     * @return La fecha mínima seleccionada en milisegundos desde la época. Retorna 0L si hay un error al obtener la fecha.
+     */
     private fun obtainMinDateAux(): Long {
-// Formato de echa esperado en el botón
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-// Obtiene la fecha desde tu botón
         val selectedDateFrom = binding.buttonFrom.text.toString()
 
         try {
-// Parsea la fecha y la devuelve como tipo Date
             val dateFrom = dateFormat.parse(selectedDateFrom)
             return dateFrom?.time ?: 0L
         } catch (e: Exception) {
@@ -180,6 +191,7 @@ class FilterActivity : AppCompatActivity() {
         }
         return 0L
     }
+
 
     /**
      * Inicializa el control deslizante (SeekBar) y maneja los cambios.
@@ -245,7 +257,7 @@ class FilterActivity : AppCompatActivity() {
             R.id.invoice_filter_close -> {
                 // Inicia la actividad de filtro al seleccionar la opción del menú
                 val filterIntent = Intent(this, MainActivity::class.java)
-intentLaunch.launch(filterIntent)
+                intentLaunch.launch(filterIntent)
                 true
             }
 

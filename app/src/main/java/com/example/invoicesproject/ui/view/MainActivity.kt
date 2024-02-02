@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,11 +44,19 @@ class MainActivity : AppCompatActivity() {
     private var filter: Filter? = null
     private lateinit var intentLaunch: ActivityResultLauncher<Intent>
 
+    private val onBackInvokeCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            finishAffinity()
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        onBackPressedDispatcher.addCallback(this, onBackInvokeCallback)
 
         supportActionBar?.setTitle("Facturas")
 
@@ -97,9 +106,9 @@ class MainActivity : AppCompatActivity() {
                 val miIntent = Intent(this, FilterActivity::class.java)
                 miIntent.putExtra("MAX_IMPORTE", maxAmount)
 
-                if(filter !=null){
+                if (filter != null) {
 
-                    miIntent.putExtra("FILTRO_ENVIAR_RECIBIR_DATOS",gson.toJson(filter))
+                    miIntent.putExtra("FILTRO_ENVIAR_RECIBIR_DATOS", gson.toJson(filter))
 
 
                 }
@@ -144,7 +153,6 @@ class MainActivity : AppCompatActivity() {
             var filteredList = getSavedFilteredList()
 
 
-
             // Si no hay filtro o la lista filtrada está vacía, muestra la lista original.
 
 
@@ -179,14 +187,18 @@ class MainActivity : AppCompatActivity() {
                         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                         nonNullFilter.maxDateValor = dateFormat.format(currentDate)
                     }
-                    invoiceList = filterInvoiceByDate(nonNullFilter.minDateValor, nonNullFilter.maxDateValor, invoiceList)
+                    invoiceList = filterInvoiceByDate(
+                        nonNullFilter.minDateValor,
+                        nonNullFilter.maxDateValor,
+                        invoiceList
+                    )
                     invoiceList = filterInvoicesByCheckBox(nonNullFilter.status, invoiceList)
                     invoiceList = verifyBalanceBar(nonNullFilter.maxValueSliderValor, invoiceList)
 
 
                     //Si no hay ninguna factura por los filtros nos muestra este texto
-                    if(invoiceList.isEmpty()){
-                        binding.emptyInvoices.visibility= View.VISIBLE
+                    if (invoiceList.isEmpty()) {
+                        binding.tvInvoiceEmpty.visibility = View.VISIBLE
 
 
                     }
@@ -203,7 +215,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             maxAmount = getMaxAmount(it)
-           // Log.d("FILTROS!", filtroJson.toString())
+            // Log.d("FILTROS!", filtroJson.toString())
         })
     }
 
@@ -248,8 +260,12 @@ class MainActivity : AppCompatActivity() {
      * @return Lista filtrada por fecha.
      */
 
-    private fun filterInvoiceByDate(dateFrom: String, dateUntil: String,filteredList: List<Invoice>): List<Invoice> {
-        val dateList= mutableListOf<Invoice>()
+    private fun filterInvoiceByDate(
+        dateFrom: String,
+        dateUntil: String,
+        filteredList: List<Invoice>
+    ): List<Invoice> {
+        val dateList = mutableListOf<Invoice>()
         if (dateFrom != getString(R.string.day_month_year) && dateUntil != getString(R.string.day_month_year)) {
             val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
@@ -262,7 +278,7 @@ class MainActivity : AppCompatActivity() {
                     dateList.add(factura)
                 }
             }
-        }else{
+        } else {
             return filteredList
         }
 
@@ -275,7 +291,7 @@ class MainActivity : AppCompatActivity() {
      * @param invoiceList Lista original de facturas.
      * @return Lista filtrada por estado.
      */
-    
+
     private fun filterInvoicesByCheckBox(
         estate: HashMap<String, Boolean>,
         invoiceList: List<Invoice>
