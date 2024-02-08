@@ -94,11 +94,24 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Infla el menú de la barra de acciones en la actividad.
+     *
+     * @param menu Objeto Menu en el cual se inflará el menú de la barra de acciones.
+     * @return true para mostrar el menú, false de lo contrario.
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
+
+    /**
+     * Maneja la selección de elementos en el menú de la barra de acciones.
+     *
+     * @param item Elemento de menú seleccionado.
+     * @return true si el elemento de menú fue manejado con éxito, false de lo contrario.
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         var gson = Gson()
         return when (item.itemId) {
@@ -123,6 +136,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Obtiene el valor máximo de importe de una lista de facturas.
+     *
+     * @param invoices Lista de facturas de la cual se va a obtener el valor máximo de importe.
+     * @return Valor máximo de importe en la lista de facturas.
+     */
     private fun getMaxAmount(invoices: List<Invoice>): Double {
         var maxAmount = 0.0
         for (factura in invoices) {
@@ -135,7 +154,6 @@ class MainActivity : AppCompatActivity() {
     /**
      * Inicializa la interfaz de usuario y el adaptador de la lista de facturas.
      */
-
     private fun initViewModel() {
         binding.rvInvoiceList.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
@@ -149,7 +167,6 @@ class MainActivity : AppCompatActivity() {
     /**
      * Inicializa el ViewModel principal y observa los cambios en la lista de facturas.
      */
-
     private fun initMainViewModel() {
         val viewModel = ViewModelProvider(this).get(InvoiceViewModel::class.java)
         viewModel.getAllRepositoryList().observe(this, Observer<List<Invoice>> {
@@ -170,26 +187,7 @@ class MainActivity : AppCompatActivity() {
             // Si la lista de facturas está vacía, realiza una llamada a la API para obtener datos.
 
 
-            if (it.isEmpty()) {
-                viewModel.makeApiCall()
-                Log.d("Datos", it.toString())
-            }
-
-            binding.mockToggleButton.setOnClickListener {
-
-                val isChecked = binding.mockToggleButton.isChecked
-                saveToggleState(isChecked)
-                if (binding.mockToggleButton.isChecked) {
-
-
-                    viewModel.changueService("real")
-                    viewModel.makeApiCall()
-                } else {
-                    viewModel.changueService("ficticio")
-                    viewModel.makeApiCall()
-
-                }
-            }
+            initCheckMockorReal(it, viewModel)
 
             // Obtiene el filtro de la intención y aplica los filtros a la lista de facturas.
 
@@ -219,16 +217,12 @@ class MainActivity : AppCompatActivity() {
                     if (invoiceList.isEmpty()) {
                         binding.tvInvoiceEmpty.visibility = View.VISIBLE
 
-
                     }
-
                     invoiceAdapter.setListInvoices(invoiceList)
                     Log.d("FILTRO2", filter.toString())
 
                     saveInvoicesList(invoiceList)
-
                 }
-
             } else {
                 Log.e("MainActivity", "El valor de FILTRO_ENVIAR_RECIBIR_DATOS es null")
             }
@@ -238,13 +232,48 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+
+    /**
+     * Inicializa el comportamiento del interruptor de alternar entre servicio ficticio y real.
+     * Si la lista proporcionada está vacía, realiza una llamada API a través del ViewModel.
+     *
+     * @param it Lista de facturas utilizada para determinar si se necesita realizar una llamada API.
+     * @param viewModel ViewModel de Invoice utilizado para realizar llamadas API y cambiar el servicio.
+     */
+    private fun initCheckMockorReal(
+        it: List<Invoice>,
+        viewModel: InvoiceViewModel
+    ) {
+        if (it.isEmpty()) {
+            viewModel.makeApiCall()
+            Log.d("Datos", it.toString())
+        }
+
+        binding.mockToggleButton.setOnClickListener {
+
+            val isChecked = binding.mockToggleButton.isChecked
+            saveToggleState(isChecked)
+            if (binding.mockToggleButton.isChecked) {
+
+
+                viewModel.changueService("real")
+                viewModel.makeApiCall()
+            } else {
+                viewModel.changueService("ficticio")
+                viewModel.makeApiCall()
+
+            }
+        }
+    }
+
+
+
     /**
      * Verifica si cada factura en la lista tiene un importe menor que el valor máximo del control deslizante.
      * @param maxValueSlider Valor máximo del control deslizante.
      * @param invoiceList Lista de facturas.
      * @return Lista filtrada de facturas.
      */
-
     private fun verifyBalanceBar(
         maxValueSlider: Double,
         invoiceList: List<Invoice>
@@ -262,7 +291,6 @@ class MainActivity : AppCompatActivity() {
      * Maneja la selección de una factura en la lista.
      * @param invoice Factura seleccionada.
      */
-
     private fun onItemSelected(invoice: Invoice) {
         // Muestra un fragmento emergente al seleccionar una factura.
 
@@ -278,7 +306,6 @@ class MainActivity : AppCompatActivity() {
      * @param filteredList Lista original de facturas.
      * @return Lista filtrada por fecha.
      */
-
     private fun filterInvoiceByDate(
         dateFrom: String,
         dateUntil: String,
@@ -310,7 +337,6 @@ class MainActivity : AppCompatActivity() {
      * @param invoiceList Lista original de facturas.
      * @return Lista filtrada por estado.
      */
-
     private fun filterInvoicesByCheckBox(
         estate: HashMap<String, Boolean>,
         invoiceList: List<Invoice>
@@ -342,11 +368,23 @@ class MainActivity : AppCompatActivity() {
         return filteredInvoices
     }
 
+
+    /**
+     * Guarda el estado del interruptor proporcionado en las preferencias compartidas.
+     *
+     * @param state Estado del interruptor que se va a guardar.
+     */
     private fun saveToggleState(state: Boolean) {
         val preferences = getPreferences(MODE_PRIVATE)
         preferences.edit().putBoolean("SWITCH_STATE", state).apply()
     }
 
+
+    /**
+     * Guarda la lista de facturas filtradas proporcionada en las preferencias compartidas.
+     *
+     * @param filteredList Lista de facturas filtradas que se va a guardar.
+     */
     private fun saveInvoicesList(filteredList: List<Invoice>) {
         val gson = Gson()
         val filteredListJson = gson.toJson(filteredList)
@@ -356,6 +394,11 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Obtiene la lista de facturas filtradas almacenada en las preferencias compartidas.
+     *
+     * @return Lista de facturas filtradas o nulo si no hay ninguna lista guardada.
+     */
     private fun getSavedFilteredList(): List<Invoice>? {
         val prefs: SharedPreferences = getPreferences(MODE_PRIVATE)
         val filteredListJson: String? = prefs.getString("LIST", null)
@@ -371,6 +414,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Obtiene el estado del interruptor almacenado en las preferencias compartidas.
+     *
+     * @return Estado del interruptor almacenado en las preferencias compartidas.
+     */
     private fun getSwitchStateFromSharedPreferences(): Boolean {
         val prefs: SharedPreferences = getPreferences(MODE_PRIVATE)
         return prefs.getBoolean("SWITCH_STATE", false)

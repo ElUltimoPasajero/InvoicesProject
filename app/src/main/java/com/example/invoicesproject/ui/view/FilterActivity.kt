@@ -106,7 +106,15 @@ class FilterActivity : AppCompatActivity() {
         initCheckBoxes()
         initResetButton()
         applyTheSavedFilters()
-        // Intenta cargar los filtros iniciales si existen
+        loadFilterIfExist()
+
+
+    }
+
+    /**
+     * Intenta cargar los filtros iniciales si existen
+     */
+    private fun loadFilterIfExist() {
         val filtroJson = intent.getStringExtra("FILTRO_ENVIAR_RECIBIR_DATOS")
         if (filtroJson != null) {
             filter = Gson().fromJson(filtroJson, Filter::class.java)
@@ -114,9 +122,6 @@ class FilterActivity : AppCompatActivity() {
                 loadFilters(nonNullFilter)
             }
         }
-        Log.d("FiltroJSON", filtroJson.toString())
-
-
     }
 
 
@@ -127,15 +132,12 @@ class FilterActivity : AppCompatActivity() {
     private fun initCalendar() {
 
         // Configuración del botón de fecha "Desde".
-
         ButtonFromInit()
-
         // Configuración del botón de fecha "Hasta".
-
         buttonUntilInit()
 
-
     }
+
 
     /**
      * Inicializa el comportamiento del botón "Until", permitiendo al usuario seleccionar una fecha
@@ -223,7 +225,6 @@ class FilterActivity : AppCompatActivity() {
         binding.sliderCount.text = "${maxAmount}"
         binding.sliderMaxValor.text = "${maxAmount}€"
         binding.sliderMinValor.text = "0€"
-
         binding.sliderAmmount.progress = maxAmount
 
 

@@ -22,42 +22,48 @@ import javax.inject.Inject
  */
 
 class InvoiceRepository @Inject constructor(
-   private var retroMockService:APIRetromockService,
-   private var retrofitService:APIRetrofitService,
+    private var retroMockService: APIRetromockService,
+    private var retrofitService: APIRetrofitService,
     private val invoiceDao: InvoiceDAO
 
-){
+) {
     private lateinit var retroService: RetroServiceInterface
-    private var datos ="ficticio"
+    private var datos = "ficticio"
 
-    fun setDatos(newDatos: String){
+    fun setDatos(newDatos: String) {
         datos = newDatos
         decideServide()
 
     }
+
     init {
         decideServide()
 
     }
 
 
+    /**
+     * Decide qué servicio Retrofit utilizar basándose en el valor de la variable 'datos'.
+     * Asigna el servicio correspondiente (servicio ficticio o servicio real) a la variable 'retroService'.
+     */
     fun decideServide() {
 
-        if (datos == "ficticio"){
+        if (datos == "ficticio") {
             retroService = retroMockService
-    }else{
-        retroService= retrofitService
+        } else {
+            retroService = retrofitService
+        }
     }
-}
+
     /**
      * Obtiene todas las facturas almacenadas en la base de datos local (Room).
      *
      * @return LiveData que contiene la lista de facturas.
      */
-
     fun getAllInvoicesFromRoom(): LiveData<List<Invoice>> {
         return invoiceDao.getAllInvoices()
     }
+
 
     /**
      * Inserta una factura en la base de datos local.
@@ -68,13 +74,13 @@ class InvoiceRepository @Inject constructor(
         invoiceDao.insertInvoices(invoice)
     }
 
+
     /**
      * Realiza una llamada a la API para obtener datos de facturas y los almacena en la base de datos local.
      */
-
     fun makeApiCall() {
         val call: Call<InvoiceRepositoriesListResponse> = retroService.getDataFromApi()
-        call?.enqueue(object : Callback<InvoiceRepositoriesListResponse>{
+        call?.enqueue(object : Callback<InvoiceRepositoriesListResponse> {
             override fun onResponse(
                 call: Call<InvoiceRepositoriesListResponse>,
                 response: Response<InvoiceRepositoriesListResponse>
@@ -86,13 +92,25 @@ class InvoiceRepository @Inject constructor(
 
                     // Inserta las nuevas facturas obtenidas de la API en la base de datos local
 
-                    response.body()?.facturas?.forEach{
-                        insertInvoicesInRoom(Invoice(decEstado = it.descEstado, importeordenacion = it.importeOrdenacion, fecha = it.fecha))
+                    response.body()?.facturas?.forEach {
+                        insertInvoicesInRoom(
+                            Invoice(
+                                decEstado = it.descEstado,
+                                importeordenacion = it.importeOrdenacion,
+                                fecha = it.fecha
+                            )
+                        )
                     }
                 }
             }
 
 
+            /**
+             * Método llamado cuando hay un fallo en la conexión durante una llamada Retrofit.
+             *
+             * @param call Objeto Call que representa la llamada Retrofit.
+             * @param t Objeto Throwable que contiene la información sobre el fallo.
+             */
             override fun onFailure(call: Call<InvoiceRepositoriesListResponse>, t: Throwable) {
                 Log.d("ERROR", "Error establishing connection")
             }
