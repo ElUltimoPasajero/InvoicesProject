@@ -38,11 +38,15 @@ class InvoiceViewHolder(view: View): ViewHolder(view) {
         binding.textViewDate.text = item.fecha?.let { formatDate(it) }
         binding.arrow.setImageResource(R.drawable.baseline_arrow_forward_ios_24)
 
+
+
         // Manejar el clic en la factura.
 
         itemView.setOnClickListener {
             onClickListener(item)
         }
+
+
 
         // Cambiar el color del texto según el estado de la factura.
 
@@ -52,7 +56,7 @@ class InvoiceViewHolder(view: View): ViewHolder(view) {
             binding.textViewStatus.setTextColor(notPaidInvoice)
         } else {
             val paidInvoice = ContextCompat.getColor(itemView.context, R.color.positivo)
-            binding.textViewStatus.setTextColor(paidInvoice)
+            binding.textViewStatus.setText("")
         }
     }
 

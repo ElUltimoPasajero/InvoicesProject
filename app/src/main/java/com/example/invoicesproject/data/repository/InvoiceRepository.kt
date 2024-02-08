@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.invoicesproject.data.database.InvoiceDAO
 import com.example.invoicesproject.data.database.Invoice
+import com.example.invoicesproject.data.network.APIRetrofitService
+import com.example.invoicesproject.data.network.APIRetromockService
 import com.example.invoicesproject.data.network.RetroServiceInterface
 import com.example.invoicesproject.data.network.model.InvoiceRepositoriesListResponse
 import retrofit2.Call
@@ -20,10 +22,33 @@ import javax.inject.Inject
  */
 
 class InvoiceRepository @Inject constructor(
-    private val retroService: RetroServiceInterface,
+   private var retroMockService:APIRetromockService,
+   private var retrofitService:APIRetrofitService,
     private val invoiceDao: InvoiceDAO
-){
 
+){
+    private lateinit var retroService: RetroServiceInterface
+    private var datos ="ficticio"
+
+    fun setDatos(newDatos: String){
+        datos = newDatos
+        decideServide()
+
+    }
+    init {
+        decideServide()
+
+    }
+
+
+    fun decideServide() {
+
+        if (datos == "ficticio"){
+            retroService = retroMockService
+    }else{
+        retroService= retrofitService
+    }
+}
     /**
      * Obtiene todas las facturas almacenadas en la base de datos local (Room).
      *

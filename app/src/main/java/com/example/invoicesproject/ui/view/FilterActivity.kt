@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.app.DatePickerDialog
-import android.provider.SyncStateContract
 import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
@@ -17,8 +16,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.example.invoicesproject.R
 import com.example.invoicesproject.databinding.ActivityFilterBinding
 import com.google.gson.Gson
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 
@@ -127,69 +128,88 @@ class FilterActivity : AppCompatActivity() {
 
         // Configuración del botón de fecha "Desde".
 
-        binding.buttonFrom.setOnClickListener {
-            obtainDate(binding.buttonFrom, false)
-
-
-        }
+        ButtonFromInit()
 
         // Configuración del botón de fecha "Hasta".
 
+        buttonUntilInit()
+
+
+    }
+
+    /**
+     * Inicializa el comportamiento del botón "Until", permitiendo al usuario seleccionar una fecha
+     * a través de un DatePickerDialog. La fecha seleccionada se muestra en el botón.
+     */
+    private fun buttonUntilInit() {
         binding.buttonUntil.setOnClickListener {
-            obtainDate(binding.buttonUntil, true, minDate = obtainMinDateAux())
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-        }
-    }
+            // Crear un DatePickerDialog con la fecha actual como predeterminada
 
-    private fun obtainDate(btnDate: Button, minDateRestriction: Boolean, minDate: Long? = null) {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-// Crear un DatePickerDialog con la fecha actual como predeterminada
-        val datePickerDialog = DatePickerDialog(
-            this,
-            { view, year1, month1, dayOfMonth ->
-                btnDate.text = "$dayOfMonth/${month1 + 1}/$year1"
-            },
-            year,
-            month,
-            day
-        )
-// Aplicar restriccion de fecha minima si es necesario
-        if (minDateRestriction) {
-            minDate?.let {
-                datePickerDialog.datePicker.minDate = it
+            val datePickerDialog = DatePickerDialog(
+                this,
+                { view, year1, month1, dayOfMonth ->
+                    binding.buttonUntil.text = "$dayOfMonth/${month1 + 1}/$year1"
+                },
+                year,
+                month,
+                day
+            )
+            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val dateFromLocale = binding.buttonFrom.text.toString()
+            val dateFrom: Date
+            try {
+                dateFrom = simpleDateFormat.parse(dateFromLocale)
+                datePickerDialog.datePicker.minDate = dateFrom.time
+            } catch (e: ParseException) {
+
+                e.printStackTrace()
             }
+            datePickerDialog.show()
         }
-        datePickerDialog.show()
     }
 
-
     /**
-     * Muestra un cuadro de diálogo de selección de fecha y actualiza el texto de un botón con la fecha seleccionada.
-     *
-     * @param btnDate El botón cuyo texto se actualizará con la fecha seleccionada.
-     * @param minDateRestriction Indica si se debe aplicar una restricción de fecha mínima.
-     * @param minDate La fecha mínima permitida si se aplica la restricción (en milisegundos desde la época). Puede ser nulo si no se desea una restricción.
+     * Inicializa el comportamiento del botón "From", permitiendo al usuario seleccionar una fecha
+     * a través de un DatePickerDialog. La fecha seleccionada se muestra en el botón y se establece
+     * como la fecha máxima permitida en el DatePickerDialog del botón "Until".
      */
 
-    /**
-     * Obtiene la fecha mínima seleccionada desde un botón y la devuelve en milisegundos desde la época.
-     *
-     * @return La fecha mínima seleccionada en milisegundos desde la época. Retorna 0L si hay un error al obtener la fecha.
-     */
-    private fun obtainMinDateAux(): Long {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val selectedDateFrom = binding.buttonFrom.text.toString()
+    private fun ButtonFromInit() {
 
-        try {
-            val dateFrom = dateFormat.parse(selectedDateFrom)
-            return dateFrom?.time ?: 0L
-        } catch (e: Exception) {
-            e.printStackTrace()
+        // Establecer un escuchador de clics para el botón "From"
+
+        binding.buttonFrom.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            // Crear un DatePickerDialog con la fecha actual como predeterminada
+            val datePickerDialog = DatePickerDialog(
+                this,
+                { view, year1, month1, dayOfMonth ->
+                    binding.buttonFrom.text = "$dayOfMonth/${month1 + 1}/$year1"
+                },
+                year,
+                month,
+                day
+            )
+            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val dateUntilLocale = binding.buttonUntil.text.toString()
+            val dateUntil: Date
+            try {
+                dateUntil = simpleDateFormat.parse(dateUntilLocale)
+                datePickerDialog.datePicker.maxDate = dateUntil.time
+            } catch (e: ParseException) {
+
+                e.printStackTrace()
+            }
+            datePickerDialog.show()
         }
-        return 0L
     }
 
 
@@ -265,22 +285,47 @@ class FilterActivity : AppCompatActivity() {
         }
     }
 
+
+    /**
+     * Guarda los filtros proporcionados en las preferencias compartidas de la aplicación.
+     *
+     * @param filter Objeto Filter que contiene los valores de los filtros a ser guardados.
+     */
     private fun saveFilters(filter: Filter) {
+
+        // Obtener las preferencias compartidas en modo privado
         val prefs = getPreferences(MODE_PRIVATE)
+        // Crear una instancia de Gson para convertir el objeto Filter a formato JSON
         val gson = Gson()
         val filterJson = gson.toJson(filter)
 
         prefs.edit().putString("FILTER_STATUS", filterJson).apply()
     }
 
+
+    /**
+     * Inicializa el comportamiento del botón de reinicio, que restablece los filtros a sus
+     * valores predeterminados.
+     */
     private fun initResetButton() {
+        // Establecer un escuchador de clics para el botón de reinicio
         binding.buttonRestart.setOnClickListener {
+            // Llamar a la función que restablece los filtros
             resetFilters()
         }
     }
 
+
+    /**
+     * Restablece los filtros a sus valores predeterminados.
+     * Se utiliza para reiniciar la interfaz de usuario y los filtros de búsqueda.
+     */
     private fun resetFilters() {
+        // Obtener el valor máximo del importe desde los extras de la intención
+        // y sumar 1 para establecerlo como el nuevo valor máximo
         maxAmount = intent.getDoubleExtra("MAX_IMPORTE", 0.0).toInt() + 1
+
+        // Restablecer el progreso del slider de importe al valor máximo
 
         binding.sliderAmmount.progress = maxAmount
         binding.buttonFrom.text = getString(R.string.day_month_year)
@@ -293,9 +338,20 @@ class FilterActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Carga los valores de los filtros proporcionados en la interfaz de usuario.
+     * Se utiliza para restaurar el estado de la interfaz de usuario con los filtros previamente guardados.
+     *
+     * @param filter Objeto Filter que contiene los valores de los filtros a ser cargados.
+     */
     private fun loadFilters(filter: Filter) {
+        // Establecer el texto de los botones de fecha con los valores del filtro
+
         binding.buttonFrom.text = filter.minDateValor
         binding.buttonUntil.text = filter.maxDateValor
+
+        // Establecer el progreso del slider de importe con el valor del filtro
+
         binding.sliderAmmount.progress = filter.maxValueSliderValor.toInt()
         binding.checkBoxPaid.isChecked = filter.status["PAGADAS_STRING"] ?: false
         binding.checkBoxCancel.isChecked = filter.status["ANULADAS_STRING"] ?: false
@@ -304,11 +360,23 @@ class FilterActivity : AppCompatActivity() {
         binding.checkBoxPayPlan.isChecked = filter.status["PLAN_PAGO_STRING"] ?: false
     }
 
+
+    /**
+     * Aplica los filtros guardados a la interfaz de usuario.
+     * Se utiliza para cargar y aplicar los filtros previamente guardados al iniciar la aplicación.
+     */
     private fun applyTheSavedFilters() {
+        // Obtener las preferencias compartidas en modo privado
+
         val prefs = getPreferences(MODE_PRIVATE)
+
+        // Obtener el JSON de filtro guardado desde las preferencias compartidas
+
         val filterJson = prefs.getString("FILTER_STATUS", null)
 
         if (filterJson != null) {
+            // Crear una instancia de Gson para convertir el JSON a un objeto Filter
+
             val gson = Gson()
             filter = gson.fromJson(filterJson, Filter::class.java)
             filter?.let { nonNullFilter ->

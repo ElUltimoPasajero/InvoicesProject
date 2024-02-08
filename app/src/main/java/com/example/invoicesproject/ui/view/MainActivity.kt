@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.invoicesproject.databinding.ActivityMainBinding
 import com.example.invoicesproject.data.database.Invoice
+import com.example.invoicesproject.di.AppModule
 import com.example.invoicesproject.ui.view.adapter.InvoiceAdapter
 import com.example.invoicesproject.viewmodel.InvoiceViewModel
 import com.google.gson.Gson
@@ -88,6 +89,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
+        val switchState = getSwitchStateFromSharedPreferences()
+        binding.mockToggleButton.isChecked = switchState
 
     }
 
@@ -170,6 +173,22 @@ class MainActivity : AppCompatActivity() {
             if (it.isEmpty()) {
                 viewModel.makeApiCall()
                 Log.d("Datos", it.toString())
+            }
+
+            binding.mockToggleButton.setOnClickListener {
+
+                val isChecked = binding.mockToggleButton.isChecked
+                saveToggleState(isChecked)
+                if (binding.mockToggleButton.isChecked) {
+
+
+                    viewModel.changueService("real")
+                    viewModel.makeApiCall()
+                } else {
+                    viewModel.changueService("ficticio")
+                    viewModel.makeApiCall()
+
+                }
             }
 
             // Obtiene el filtro de la intención y aplica los filtros a la lista de facturas.
@@ -323,6 +342,11 @@ class MainActivity : AppCompatActivity() {
         return filteredInvoices
     }
 
+    private fun saveToggleState(state: Boolean) {
+        val preferences = getPreferences(MODE_PRIVATE)
+        preferences.edit().putBoolean("SWITCH_STATE", state).apply()
+    }
+
     private fun saveInvoicesList(filteredList: List<Invoice>) {
         val gson = Gson()
         val filteredListJson = gson.toJson(filteredList)
@@ -347,4 +371,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getSwitchStateFromSharedPreferences(): Boolean {
+        val prefs: SharedPreferences = getPreferences(MODE_PRIVATE)
+        return prefs.getBoolean("SWITCH_STATE", false)
+    }
+
+
+    private fun getFilteredListFromSharedPreferences(): List<Invoice>? {
+        val prefs: SharedPreferences = getPreferences(MODE_PRIVATE)
+        val filteredListJson: String? = prefs.getString("FILTERED_LIST", null)
+
+        return if (filteredListJson != null) {
+            val gson = Gson()
+            val type = object : TypeToken<List<Invoice>>() {}.type
+            gson.fromJson(filteredListJson, type)
+        } else {
+            null
+        }
+    }
 }
