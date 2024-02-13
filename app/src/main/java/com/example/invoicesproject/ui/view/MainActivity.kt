@@ -17,7 +17,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.invoicesproject.databinding.ActivityMainBinding
 import com.example.invoicesproject.data.database.Invoice
 import com.example.invoicesproject.di.AppModule
@@ -161,6 +163,8 @@ class MainActivity : AppCompatActivity() {
                 onItemSelected(invoice)
             }
             adapter = invoiceAdapter
+            val decoration = DividerItemDecoration(this@MainActivity, RecyclerView.VERTICAL)
+            binding.rvInvoiceList.addItemDecoration(decoration)
         }
     }
 
